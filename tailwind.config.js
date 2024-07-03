@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      height: {
+        'menu': 'calc(100vh - 8rem)',
+      },
+    },
   },
   plugins: [],
 }
