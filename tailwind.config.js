@@ -8,6 +8,7 @@ export default {
     extend: {
       height: {
         'menu': 'calc(100vh - 8rem)',
+        'main': 'calc(100vh - 10rem',
       },
     },
   },
