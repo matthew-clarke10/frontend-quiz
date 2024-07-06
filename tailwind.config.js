@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       height: {
-        'menu': 'calc(100vh - 8rem)',
+        'header': '8rem',
+        'body': 'calc(100vh - 8rem)',
         'main': 'calc(100vh - 10rem',
       },
     },

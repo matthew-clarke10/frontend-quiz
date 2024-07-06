@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function Quizzes() {
   return (
-    <main className="bg-gray-100 h-menu p-4">
+    <>
       <h2 className="flex justify-center items-center h-16 text-4xl font-bold mb-4">Quiz Selection</h2>
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 h-auto">
         <Link to="/quizzes/html" className="flex justify-center items-center w-full h-32 md:h-48 p-4 text-6xl bg-orange-100 text-orange-600 hover:bg-orange-200 hover:border-4 hover:border-orange-300 hover:cursor-pointer">
@@ -19,7 +19,7 @@ function Quizzes() {
           All
         </Link>
       </section>
-    </main>
+    </>
   );
 }
 
