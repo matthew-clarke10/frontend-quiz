@@ -8,6 +8,7 @@ export default {
     extend: {
       height: {
         'header': '8rem',
+        'header-small': '4rem',
         'body': 'calc(100vh - 8rem)',
         'main': 'calc(100vh - 10rem',
       },
