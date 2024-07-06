@@ -1,4 +1,4 @@
-import { QuizData } from './quizTypes';
+import { QuizData } from './quizTypes'
 
 const htmlQuizData: QuizData = {
   title: 'HTML Quiz',
@@ -9,6 +9,6 @@ const htmlQuizData: QuizData = {
     },
     // More questions...
   ],
-};
+}
 
-export default htmlQuizData;
+export default htmlQuizData

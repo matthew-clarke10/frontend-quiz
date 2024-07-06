@@ -1,4 +1,4 @@
-import { QuizData } from './quizTypes';
+import { QuizData } from './quizTypes'
 
 const cssQuizData: QuizData = {
   title: 'CSS Quiz',
@@ -9,6 +9,6 @@ const cssQuizData: QuizData = {
     },
     // More questions...
   ],
-};
+}
 
-export default cssQuizData;
+export default cssQuizData

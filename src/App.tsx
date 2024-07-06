@@ -8,12 +8,35 @@ import htmlQuizData from './data/htmlQuizData'
 import cssQuizData from './data/cssQuizData'
 import jsQuizData from './data/jsQuizData'
 import allQuizData from './data/allQuizData'
+import { useEffect, useState } from 'react'
 
 function App() {
+  const [musicEnabled, setMusicEnabled] = useState<boolean>(false)
+
+  useEffect(() => {
+    async function checkMusicEnabled() {
+      const isMusicEnabledObject = localStorage.getItem("isMusicEnabled")
+      const isMusicEnabled = isMusicEnabledObject ? JSON.parse(isMusicEnabledObject) === true : false
+      setMusicEnabled(isMusicEnabled)
+    }
+
+    checkMusicEnabled()
+  })
+
+  function toggleMusicEnabled() {
+    if (musicEnabled) {
+      localStorage.setItem("isMusicEnabled", "false")
+      setMusicEnabled(false)
+    } else {
+      localStorage.setItem("isMusicEnabled", "true")
+      setMusicEnabled(true)
+    }
+  }
+
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Menu />} />
+      <Route path="/" element={<Layout toggleMusicEnabled={toggleMusicEnabled} musicEnabled={musicEnabled} />}>
+        <Route index element={<Menu toggleMusicEnabled={toggleMusicEnabled} musicEnabled={musicEnabled} />} />
         <Route path="quizzes">
           <Route index element={<Quizzes />} />
           <Route path="html" element={<Quiz {...htmlQuizData} />} />
