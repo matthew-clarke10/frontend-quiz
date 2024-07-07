@@ -9,6 +9,8 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [options, setOptions] = useState<string[]>([])
   const [allLoaded, setAllLoaded] = useState(false)
   const [timer, setTimer] = useState(30)
+  const [selectedOption, setSelectedOption] = useState(false)
+  const [optionChosen, setOptionChosen] = useState('')
 
   useEffect(() => {
     const loadQuestion = () => {
@@ -44,6 +46,10 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
       let time = 30
       const timerInterval = setInterval(() => {
         setTimer(--time)
+        if (selectedOption) {
+          clearInterval(timerInterval)
+        }
+
         if (time === 0) {
           clearInterval(timerInterval)
         }
@@ -58,7 +64,30 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
     if (allLoaded) {
       startTimer()
     }
-  }, [questions, questionNumber, allLoaded])
+  }, [questions, questionText, questionNumber, allLoaded, selectedOption])
+
+  const handleOptionClick = (optionClicked: string) => {
+    if (allLoaded) {
+      setOptionChosen(optionClicked)
+      setSelectedOption(true)
+      if (optionClicked === questions[questionNumber - 1].answer) {
+        // TO-DO
+        const timerInterval = setInterval(() => {
+          setQuestionNumber(questionNumber + 1)
+          setQuestionText('')
+          setOptions([])
+          setAllLoaded(false)
+          setTimer(30)
+          setSelectedOption(false)
+          setOptionChosen('')
+          clearInterval(timerInterval)
+        }, 3000)
+
+      } else {
+        // TO-DO
+      }
+    }
+  }
 
   return (
     <section>
@@ -73,18 +102,38 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
         <div className="flex justify-center items-center w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 border-4 text-yellow-500 border-yellow-500 rounded-full text-2xl sm:text-3xl md:text-4xl">{timer}</div>
       </section>
       <section className="grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 h-options-small md:h-options text-center hover:cursor-pointer">
-        <div className="flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4 bg-red-300 border-red-500 hover:bg-red-400">
+        <button onClick={() => handleOptionClick('A')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+          ${selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer === 'A' ? 'bg-green-500 border-green-600'
+            : selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer !== 'A' ? 'bg-red-500 border-red-600'
+              : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer == 'A' ? 'bg-green-500 border-green-600'
+                : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer !== 'A' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                  : 'bg-red-300 border-red-500 hover:bg-red-400'}`}>
           {options[0]}
-        </div>
-        <div className="flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4 bg-blue-300 border-blue-500 hover:bg-blue-400">
+        </button>
+        <button onClick={() => handleOptionClick('B')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+          ${selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer === 'B' ? 'bg-green-500 border-green-600'
+            : selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer !== 'B' ? 'bg-red-500 border-red-600'
+              : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer == 'B' ? 'bg-green-500 border-green-600'
+                : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer !== 'B' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                  : 'bg-blue-300 border-blue-500 hover:bg-blue-400'}`}>
           {options[1]}
-        </div>
-        <div className="flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4 bg-yellow-300 border-yellow-500 hover:bg-yellow-400">
+        </button>
+        <button onClick={() => handleOptionClick('C')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+          ${selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer === 'C' ? 'bg-green-500 border-green-600'
+            : selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer !== 'C' ? 'bg-red-500 border-red-600'
+              : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer == 'C' ? 'bg-green-500 border-green-600'
+                : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer !== 'C' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                  : 'bg-yellow-300 border-yellow-500 hover:bg-yellow-400'}`}>
           {options[2]}
-        </div>
-        <div className="flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4 bg-green-300 border-green-500 hover:bg-green-400">
+        </button>
+        <button onClick={() => handleOptionClick('D')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+          ${selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer === 'D' ? 'bg-green-500 border-green-600'
+            : selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer !== 'D' ? 'bg-red-500 border-red-600'
+              : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer == 'D' ? 'bg-green-500 border-green-600'
+                : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer !== 'D' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                  : 'bg-green-300 border-green-500 hover:bg-green-400'}`}>
           {options[3]}
-        </div>
+        </button>
       </section>
     </section>
   )
