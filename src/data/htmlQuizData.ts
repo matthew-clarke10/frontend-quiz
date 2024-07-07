@@ -1,11 +1,11 @@
 import { QuizData } from './quizTypes'
 
 const htmlQuizData: QuizData = {
-  title: 'HTML Quiz',
   questions: [
     {
       question: 'What does HTML stand for?',
-      options: ['Hyper Text Markup Language', 'High Text Markup Language', 'Hyper Tabular Markup Language'],
+      options: ['Heavily Technical Machine Language', 'Honest Text Modeling Logic', 'Hyper Text Markup Language', 'Handy Tabular Machine Lingo'],
+      answer: 'C',
     },
     // More questions...
   ],

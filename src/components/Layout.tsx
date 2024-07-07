@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ toggleMusicEnabled, musicEnabled }) => 
         {quizPage && (
           <Link to="/" className="flex justify-center items-center h-full px-1 w-80 md:w-96 font-bold text-center border-4 bg-blue-600 hover:bg-blue-700 border-blue-700 hover:border-blue-800 text-base sm:text-xl md:text-3xl">Home</Link>
         )}
-        <h1 className={`flex justify-center items-center bg-blue-500 w-full font-bold text-center ${quizPage ? 'text-xl sm:text-3xl md:text-5xl' : 'text-3xl md:text-5xl'}`}>{quizPage ? `Quiz: ${headerText}` : 'Front-end Quizzes'}</h1>
+        <h1 className={`flex justify-center items-center h-full bg-blue-500 border-y-4 border-blue-600  w-full font-bold text-center ${quizPage ? 'text-xl sm:text-3xl md:text-5xl' : 'text-3xl md:text-5xl'}`}>{quizPage ? `Quiz: ${headerText}` : 'Front-end Quizzes'}</h1>
         {quizPage && (
           <button onClick={toggleMusicEnabled} className={`h-full px-1 w-80 md:w-96 font-bold whitespace-nowrap text-base sm:text-xl md:text-3xl border-4 ${musicEnabled ? 'bg-green-500 hover:bg-green-600 border-green-700' : 'bg-red-500 hover:bg-red-600 border-red-700'}`}>{musicEnabled ? 'Music Enabled' : 'Music Disabled'}</button>
         )}

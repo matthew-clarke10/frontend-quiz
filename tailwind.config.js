@@ -12,6 +12,11 @@ export default {
         'body': 'calc(100vh - 8rem)',
         'body-large': 'calc(100vh - 4rem)',
         'main': 'calc(100vh - 10rem',
+        'options': 'calc(100vh - 24rem)',
+        'options-small': 'calc(100vh - 22rem)',
+      },
+      width: {
+        'powerups': 'calc(100vw - 10rem)',
       },
     },
   },
