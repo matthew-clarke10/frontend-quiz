@@ -3,13 +3,14 @@ import { FaRegSnowflake } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { QuizData } from '../data/quizTypes'
 
+let selectedOption = false
+
 const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [questionNumber, setQuestionNumber] = useState(1)
   const [questionText, setQuestionText] = useState('')
   const [options, setOptions] = useState<string[]>([])
   const [allLoaded, setAllLoaded] = useState(false)
   const [timer, setTimer] = useState(30)
-  const [selectedOption, setSelectedOption] = useState(false)
   const [optionChosen, setOptionChosen] = useState('')
 
   useEffect(() => {
@@ -45,9 +46,10 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
     const startTimer = () => {
       let time = 30
       const timerInterval = setInterval(() => {
-        setTimer(--time)
         if (selectedOption) {
           clearInterval(timerInterval)
+        } else {
+          setTimer(--time)
         }
 
         if (time === 0) {
@@ -58,28 +60,28 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
     }
 
     if (questionText === '') {
-      loadQuestion()
+      loadQuestion();
     }
 
     if (allLoaded) {
-      startTimer()
+      startTimer();
     }
-  }, [questions, questionText, questionNumber, allLoaded, selectedOption])
+  }, [questions, questionText, questionNumber, allLoaded]);
 
   const handleOptionClick = (optionClicked: string) => {
     if (allLoaded) {
       setOptionChosen(optionClicked)
-      setSelectedOption(true)
+      selectedOption = true
       if (optionClicked === questions[questionNumber - 1].answer) {
         // TO-DO
         const timerInterval = setInterval(() => {
-          setQuestionNumber(questionNumber + 1)
-          setQuestionText('')
-          setOptions([])
           setAllLoaded(false)
+          setQuestionNumber(questionNumber + 1)
+          setOptions([])
           setTimer(30)
-          setSelectedOption(false)
+          selectedOption = false
           setOptionChosen('')
+          setQuestionText('')
           clearInterval(timerInterval)
         }, 3000)
 
@@ -106,7 +108,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           ${selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer === 'A' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer !== 'A' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer == 'A' ? 'bg-green-500 border-green-600'
-                : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer !== 'A' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer !== 'A' ? 'opacity-50 bg-gray-600 border-gray-800'
                   : 'bg-red-300 border-red-500 hover:bg-red-400'}`}>
           {options[0]}
         </button>
@@ -114,7 +116,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           ${selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer === 'B' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer !== 'B' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer == 'B' ? 'bg-green-500 border-green-600'
-                : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer !== 'B' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer !== 'B' ? 'opacity-50 bg-gray-600 border-gray-800'
                   : 'bg-blue-300 border-blue-500 hover:bg-blue-400'}`}>
           {options[1]}
         </button>
@@ -122,7 +124,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           ${selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer === 'C' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer !== 'C' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer == 'C' ? 'bg-green-500 border-green-600'
-                : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer !== 'C' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer !== 'C' ? 'opacity-50 bg-gray-600 border-gray-800'
                   : 'bg-yellow-300 border-yellow-500 hover:bg-yellow-400'}`}>
           {options[2]}
         </button>
@@ -130,7 +132,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           ${selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer === 'D' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer !== 'D' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer == 'D' ? 'bg-green-500 border-green-600'
-                : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer !== 'D' ? 'opacity-50 bg-blue-300 border-blue-500 hover:bg-blue-400'
+                : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer !== 'D' ? 'opacity-50 bg-gray-600 border-gray-800'
                   : 'bg-green-300 border-green-500 hover:bg-green-400'}`}>
           {options[3]}
         </button>
