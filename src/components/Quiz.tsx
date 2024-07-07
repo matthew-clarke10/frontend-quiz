@@ -8,6 +8,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [questionText, setQuestionText] = useState('')
   const [options, setOptions] = useState<string[]>([])
   const [allLoaded, setAllLoaded] = useState(false)
+  const [timer, setTimer] = useState(30)
 
   useEffect(() => {
     const loadQuestion = () => {
@@ -30,7 +31,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
       const optionsInterval = setInterval(() => {
         const newOptions = options.slice(0, index + 1)
         setOptions(newOptions)
-        index++;
+        index++
         if (index === 4) {
           clearInterval(optionsInterval)
           setAllLoaded(true)
@@ -39,8 +40,25 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
       return () => clearInterval(optionsInterval)
     }
 
-    loadQuestion()
-  }, [questions, questionNumber])
+    const startTimer = () => {
+      let time = 30
+      const timerInterval = setInterval(() => {
+        setTimer(--time)
+        if (time === 0) {
+          clearInterval(timerInterval)
+        }
+      }, 1000)
+      return () => clearInterval(timerInterval)
+    }
+
+    if (questionText === '') {
+      loadQuestion()
+    }
+
+    if (allLoaded) {
+      startTimer()
+    }
+  }, [questions, questionNumber, allLoaded])
 
   return (
     <section>
@@ -52,7 +70,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           <div title="Choose between two options" className="flex justify-center items-center sm:w-24 md:w-36 h-12 md:h-16 border-4 border-green-400 text-green-400 text-base md:text-2xl p-2 hover:cursor-pointer hover:bg-green-200">50/50</div>
           <div className=""><FaRegSnowflake title="Freeze time for 30 seconds" color="#BAE6FD" className="w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100" /></div>
         </div>
-        <div className="flex justify-center items-center w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 border-4 text-yellow-500 border-yellow-500 rounded-full text-2xl sm:text-3xl md:text-4xl">30</div>
+        <div className="flex justify-center items-center w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 border-4 text-yellow-500 border-yellow-500 rounded-full text-2xl sm:text-3xl md:text-4xl">{timer}</div>
       </section>
       <section className="grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 h-options-small md:h-options text-center hover:cursor-pointer">
         <div className="flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4 bg-red-300 border-red-500 hover:bg-red-400">
