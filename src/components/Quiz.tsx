@@ -12,6 +12,9 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [allLoaded, setAllLoaded] = useState(false)
   const [timer, setTimer] = useState(30)
   const [optionChosen, setOptionChosen] = useState('')
+  const [secondChanceState, setSecondChanceState] = useState('unused')
+  //const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false)
+  //const [freezeUsed, setFreezeUsed] = useState(false)
 
   useEffect(() => {
     const loadQuestion = () => {
@@ -54,6 +57,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
 
         if (time === 0) {
           clearInterval(timerInterval)
+          lostGame()
         }
       }, 1000)
       return () => clearInterval(timerInterval)
@@ -69,12 +73,62 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
   }, [questions, questionText, questionNumber, allLoaded]);
 
   const handleOptionClick = (optionClicked: string) => {
-    if (allLoaded) {
+
+    if (!selectedOption) {
+      if (allLoaded) {
+        if (secondChanceState === "unused" || secondChanceState === "used") {
+          setOptionChosen(optionClicked)
+          selectedOption = true
+          const answerInterval = setInterval(() => {
+            if (optionClicked === questions[questionNumber - 1].answer) {
+              if (questionNumber === 10) {
+                wonGame()
+              } else {
+                setAllLoaded(false)
+                setQuestionNumber(questionNumber + 1)
+                setOptions([])
+                setTimer(30)
+                selectedOption = false
+                setOptionChosen('')
+                setQuestionText('')
+                clearInterval(answerInterval)
+              }
+            } else {
+              clearInterval(answerInterval)
+              lostGame()
+            }
+          }, 3000)
+        } else {
+          handleSecondChanceInUse(optionClicked)
+        }
+      }
+    }
+  }
+
+  const wonGame = () => {
+    console.log('You won!')
+  }
+
+  const lostGame = () => {
+    console.log('You lost!')
+  }
+
+  const secondChanceActivated = () => {
+    if (allLoaded && secondChanceState === 'unused') {
+      setSecondChanceState('active')
+      console.log('Powerup used!')
+    }
+  }
+
+  const handleSecondChanceInUse = (optionClicked: string) => {
+    if (optionClicked === questions[questionNumber - 1].answer) {
       setOptionChosen(optionClicked)
       selectedOption = true
-      if (optionClicked === questions[questionNumber - 1].answer) {
-        // TO-DO
-        const timerInterval = setInterval(() => {
+      const answerInterval = setInterval(() => {
+        if (questionNumber === 10) {
+          wonGame()
+          clearInterval(answerInterval)
+        } else {
           setAllLoaded(false)
           setQuestionNumber(questionNumber + 1)
           setOptions([])
@@ -82,11 +136,18 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
           selectedOption = false
           setOptionChosen('')
           setQuestionText('')
-          clearInterval(timerInterval)
-        }, 3000)
-
+          setSecondChanceState("used")
+          clearInterval(answerInterval)
+        }
+      }, 3000)
+    } else {
+      setOptionChosen('')
+      if (secondChanceState === "active") {
+        setSecondChanceState("used: " + optionClicked)
       } else {
-        // TO-DO
+        setOptionChosen(optionClicked)
+        selectedOption = true
+        lostGame()
       }
     }
   }
@@ -97,14 +158,14 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
       <h3 className="flex justify-center text-center font-bold text-3xl sm:text-4xl md:text-5xl h-24 md:h-16">{questionText}</h3>
       <section className="flex flex-wrap justify-between items-center h-24 mb-8">
         <div className="w-auto sm:w-powerups flex flex-wrap items-center gap-2">
-          <div className=""><FaHeartCirclePlus title="Second chance" color="red" className="w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-red-500 py-2 hover:cursor-pointer hover:bg-red-200" /></div>
+          <button onClick={secondChanceActivated}><FaHeartCirclePlus title="Second chance" color="red" className={`${secondChanceState === "active" ? "bg-red-300" : secondChanceState === "unused" ? "hover:cursor-pointer hover:bg-red-200" : "hidden"} w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-red-500 py-2`} /></button>
           <div title="Choose between two options" className="flex justify-center items-center sm:w-24 md:w-36 h-12 md:h-16 border-4 border-green-400 text-green-400 text-base md:text-2xl p-2 hover:cursor-pointer hover:bg-green-200">50/50</div>
-          <div className=""><FaRegSnowflake title="Freeze time for 30 seconds" color="#BAE6FD" className="w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100" /></div>
+          <div><FaRegSnowflake title="Freeze time for 30 seconds" color="#BAE6FD" className="w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100" /></div>
         </div>
         <div className="flex justify-center items-center w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 border-4 text-yellow-500 border-yellow-500 rounded-full text-2xl sm:text-3xl md:text-4xl">{timer}</div>
       </section>
       <section className="grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 h-options-small md:h-options text-center hover:cursor-pointer">
-        <button onClick={() => handleOptionClick('A')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+        <button onClick={() => handleOptionClick('A')} className={`${secondChanceState === "used: A" || secondChanceState === "used: A" ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
           ${selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer === 'A' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'A' && questions[questionNumber - 1].answer !== 'A' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'A' && questions[questionNumber - 1].answer == 'A' ? 'bg-green-500 border-green-600'
@@ -112,7 +173,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
                   : 'bg-red-300 border-red-500 hover:bg-red-400'}`}>
           {options[0]}
         </button>
-        <button onClick={() => handleOptionClick('B')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+        <button onClick={() => handleOptionClick('B')} className={`${secondChanceState === "used: B" || secondChanceState === "used: B" ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
           ${selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer === 'B' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'B' && questions[questionNumber - 1].answer !== 'B' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'B' && questions[questionNumber - 1].answer == 'B' ? 'bg-green-500 border-green-600'
@@ -120,7 +181,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
                   : 'bg-blue-300 border-blue-500 hover:bg-blue-400'}`}>
           {options[1]}
         </button>
-        <button onClick={() => handleOptionClick('C')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+        <button onClick={() => handleOptionClick('C')} className={`${secondChanceState === "used: C" || secondChanceState === "used: C" ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
           ${selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer === 'C' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'C' && questions[questionNumber - 1].answer !== 'C' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'C' && questions[questionNumber - 1].answer == 'C' ? 'bg-green-500 border-green-600'
@@ -128,7 +189,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
                   : 'bg-yellow-300 border-yellow-500 hover:bg-yellow-400'}`}>
           {options[2]}
         </button>
-        <button onClick={() => handleOptionClick('D')} className={`flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
+        <button onClick={() => handleOptionClick('D')} className={`${secondChanceState === "used: D" || secondChanceState === "used: D" ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
           ${selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer === 'D' ? 'bg-green-500 border-green-600'
             : selectedOption && optionChosen === 'D' && questions[questionNumber - 1].answer !== 'D' ? 'bg-red-500 border-red-600'
               : selectedOption && optionChosen !== 'D' && questions[questionNumber - 1].answer == 'D' ? 'bg-green-500 border-green-600'
