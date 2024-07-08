@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { QuizData } from '../data/quizTypes'
 
 let selectedOption = false
+let freezeState = "unused"
 
 const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [questionNumber, setQuestionNumber] = useState(1)
@@ -14,7 +15,7 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
   const [optionChosen, setOptionChosen] = useState('')
   const [secondChanceState, setSecondChanceState] = useState('unused')
   //const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false)
-  //const [freezeUsed, setFreezeUsed] = useState(false)
+  const [freezeUsed, setFreezeUsed] = useState(false)
 
   useEffect(() => {
     const loadQuestion = () => {
@@ -49,10 +50,42 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
     const startTimer = () => {
       let time = 30
       const timerInterval = setInterval(() => {
+        console.log(1)
+
+        console.log(freezeState)
+
+        if (freezeState === "active") {
+          console.log(2)
+          clearInterval(timerInterval)
+          const freezeTimeout = setTimeout(() => {
+            const secondTimerInterval = setInterval(() => {
+              console.log('hi')
+              freezeState = "used"
+              clearTimeout(freezeTimeout)
+              if (selectedOption) {
+                clearInterval(timerInterval)
+                clearInterval(secondTimerInterval)
+              } else {
+                setTimer(--time)
+              }
+
+              if (time === 0) {
+                clearInterval(timerInterval)
+                clearInterval(secondTimerInterval)
+                lostGame()
+              }
+            }, 1000)
+          }, 30000)
+        }
+
         if (selectedOption) {
           clearInterval(timerInterval)
         } else {
-          setTimer(--time)
+          if (freezeState !== "active") {
+            setTimer(--time)
+          } else {
+            setFreezeUsed(true)
+          }
         }
 
         if (time === 0) {
@@ -120,6 +153,13 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
     }
   }
 
+  const freezeActivated = () => {
+    if (allLoaded && freezeState === "unused") {
+      freezeState = "active"
+      console.log('Powerup used!')
+    }
+  }
+
   const handleSecondChanceInUse = (optionClicked: string) => {
     if (optionClicked === questions[questionNumber - 1].answer) {
       setOptionChosen(optionClicked)
@@ -160,7 +200,16 @@ const Quiz: React.FC<QuizData> = ({ questions }) => {
         <div className="w-auto sm:w-powerups flex flex-wrap items-center gap-2">
           <button onClick={secondChanceActivated}><FaHeartCirclePlus title="Second chance" color="red" className={`${secondChanceState === "active" ? "bg-red-300" : secondChanceState === "unused" ? "hover:cursor-pointer hover:bg-red-200" : "hidden"} w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-red-500 py-2`} /></button>
           <div title="Choose between two options" className="flex justify-center items-center sm:w-24 md:w-36 h-12 md:h-16 border-4 border-green-400 text-green-400 text-base md:text-2xl p-2 hover:cursor-pointer hover:bg-green-200">50/50</div>
-          <div><FaRegSnowflake title="Freeze time for 30 seconds" color="#BAE6FD" className="w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100" /></div>
+          <button onClick={freezeActivated} className={`${freezeState === "used" ? "hidden" : ""} relative w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100`}>
+            <FaRegSnowflake
+              title="Freeze time for 30 seconds"
+              color="#BAE6FD"
+              className="w-full h-full"
+            />
+            {freezeUsed && (
+              <div className="absolute inset-0 bg-sky-500 opacity-40 h-full animate-freeze"></div>
+            )}
+          </button>
         </div>
         <div className="flex justify-center items-center w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 border-4 text-yellow-500 border-yellow-500 rounded-full text-2xl sm:text-3xl md:text-4xl">{timer}</div>
       </section>

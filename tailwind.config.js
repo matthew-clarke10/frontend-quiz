@@ -18,6 +18,15 @@ export default {
       width: {
         'powerups': 'calc(100vw - 10rem)',
       },
+      keyframes: {
+        freeze: {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
+        },
+      },
+      animation: {
+        freeze: 'freeze 30s linear forwards',
+      },
     },
   },
   plugins: [],
