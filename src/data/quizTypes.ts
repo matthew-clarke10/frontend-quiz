@@ -5,5 +5,6 @@ export interface Question {
 }
 
 export interface QuizData {
+  type: string;
   questions: Question[];
 }

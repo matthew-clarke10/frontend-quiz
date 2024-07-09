@@ -1,6 +1,7 @@
 import { QuizData } from './quizTypes'
 
 const htmlQuizData: QuizData = {
+  type: 'html',
   questions: [
     {
       question: 'What does HTML stand for?',
