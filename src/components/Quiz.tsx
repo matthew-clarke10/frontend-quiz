@@ -224,13 +224,13 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const secondChanceActivated = () => {
-    if (allLoaded && secondChanceState === 'unused') {
+    if (allLoaded && !selectedOption && secondChanceState === 'unused') {
       setSecondChanceState('active')
     }
   }
 
   const fiftyFiftyActivated = () => {
-    if (allLoaded && fiftyFiftyState === "unused") {
+    if (allLoaded && !selectedOption && fiftyFiftyState === "unused") {
       const optionsArray = ["A", "B", "C", "D"]
       if (secondChanceState.startsWith("used:")) {
         const incorrectOptionsArray = []
@@ -270,7 +270,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const freezeActivated = () => {
-    if (allLoaded && freezeState === "unused") {
+    if (allLoaded && !selectedOption && freezeState === "unused") {
       freezeState = "active"
     }
   }
