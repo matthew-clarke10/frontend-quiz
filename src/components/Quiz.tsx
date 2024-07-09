@@ -114,7 +114,6 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }, [quizData.questions, questionText, questionNumber, allLoaded]);
 
   const handleOptionClick = (optionClicked: string) => {
-
     if (!selectedOption) {
       if (allLoaded) {
         if (secondChanceState === "unused" || secondChanceState === "used") {
@@ -167,6 +166,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
     setFiftyFiftyState("unused")
     setFreezeUsed(false)
     setGameState("playing")
+    setHighScore(false)
   }
 
   const resetVariables = () => {
