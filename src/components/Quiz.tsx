@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 let selectedOption = false
 let freezeState = "unused"
+let freezeTimeout: NodeJS.Timeout;
 
 const Quiz: React.FC<QuizData> = (quizData) => {
   const [questionNumber, setQuestionNumber] = useState(1)
@@ -65,7 +66,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       const timerInterval = setInterval(() => {
         if (freezeState === "active") {
           clearInterval(timerInterval)
-          const freezeTimeout = setTimeout(() => {
+          freezeTimeout = setTimeout(() => {
             const secondTimerInterval = setInterval(() => {
               freezeState = "used"
               clearTimeout(freezeTimeout)
@@ -131,6 +132,11 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const handleOptionClick = (optionClicked: string) => {
+    if (freezeState === "active") {
+      freezeState = "used"
+      clearTimeout(freezeTimeout)
+    }
+
     if (!selectedOption) {
       if (allLoaded) {
         if (secondChanceState === "unused" || secondChanceState === "used") {
@@ -382,7 +388,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
           <div className="w-auto sm:w-powerups flex flex-wrap items-center gap-2">
             <button onClick={secondChanceActivated}><FaHeartCirclePlus title="Second chance" color="red" className={`${secondChanceState === "active" ? "bg-red-300" : secondChanceState === "unused" ? "hover:cursor-pointer hover:bg-red-200" : "hidden"} w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-red-500 py-2`} /></button>
             <button onClick={fiftyFiftyActivated} title="Choose between two options" className={`${fiftyFiftyState !== "unused" ? "hidden" : ""} flex justify-center items-center sm:w-24 md:w-36 h-12 md:h-16 border-4 border-green-400 text-green-400 text-base md:text-2xl p-2 hover:cursor-pointer hover:bg-green-200`}>50/50</button>
-            <button onClick={freezeActivated} className={`${freezeState === "used" ? "hidden" : ""} relative w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer hover:bg-sky-100`}>
+            <button onClick={freezeActivated} className={`${freezeState === "active" ? "" : freezeState === "unused" ? "hover:cursor-pointer hover:bg-sky-100" : "hidden"}  relative w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-sky-300 py-2 hover:cursor-pointer`}>
               <FaRegSnowflake
                 title="Freeze time for 30 seconds"
                 color="#BAE6FD"
