@@ -1,6 +1,7 @@
 import { QuizData } from './quizTypes'
 
 const cssQuizData: QuizData = {
+  type: 'css',
   questions: [
     {
       question: 'What does CSS stand for?',

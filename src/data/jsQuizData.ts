@@ -1,6 +1,7 @@
 import { QuizData } from './quizTypes'
 
 const jsQuizData: QuizData = {
+  type: 'js',
   questions: [
     {
       question: 'What is the correct syntax for referring to an external script called "xxx.js"?',

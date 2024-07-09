@@ -112,6 +112,19 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       return () => clearInterval(timerInterval)
     }
 
+    const musicSettingString = localStorage.getItem("isMusicEnabled")
+    if (musicSettingString) {
+      const musicSetting = musicSettingString === "true" ? true : false;
+      if (musicSetting) {
+        const musicElement = document.querySelector('.music-audio') as HTMLAudioElement;
+        if (musicElement) {
+          musicElement.play().catch(error => {
+            console.error('Error playing audio:', error);
+          });
+        }
+      }
+    }
+
     if (questionText === '') {
       loadQuestionText();
     }
@@ -435,6 +448,9 @@ const Quiz: React.FC<QuizData> = (quizData) => {
             {options[3]}
           </button>
         </section>
+        <audio className="music-audio" loop>
+          <source src="/music/initial-music.mp3" type="audio/mp3" />
+        </audio>
       </section>
     )
   }
