@@ -31,7 +31,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       resetVariables()
     }
 
-    const loadQuestion = () => {
+    const loadQuestionText = () => {
       let index = 0
       const question = quizData.questions[questionNumber - 1].question
       const questionInterval = setInterval(() => {
@@ -63,7 +63,6 @@ const Quiz: React.FC<QuizData> = (quizData) => {
     const startTimer = () => {
       let time = 30
       const timerInterval = setInterval(() => {
-        console.log('hey')
         if (freezeState === "active") {
           clearInterval(timerInterval)
           const freezeTimeout = setTimeout(() => {
@@ -73,6 +72,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
               if (selectedOption) {
                 clearInterval(timerInterval)
                 clearInterval(secondTimerInterval)
+                clearTimeout(freezeTimeout)
               } else {
                 setTimer(--time)
               }
@@ -80,10 +80,17 @@ const Quiz: React.FC<QuizData> = (quizData) => {
               if (time === 0) {
                 clearInterval(timerInterval)
                 clearInterval(secondTimerInterval)
+                clearTimeout(freezeTimeout)
                 lostGame()
               }
             }, 1000)
           }, 30000)
+
+          if (selectedOption) {
+            console.log('hey')
+            clearInterval(timerInterval)
+            clearTimeout(freezeTimeout)
+          }
         }
 
         if (selectedOption) {
@@ -105,13 +112,23 @@ const Quiz: React.FC<QuizData> = (quizData) => {
     }
 
     if (questionText === '') {
-      loadQuestion();
+      loadQuestionText();
     }
 
     if (allLoaded) {
       startTimer();
     }
   }, [quizData.questions, questionText, questionNumber, allLoaded]);
+
+  const resetForNextQuestion = () => {
+    setAllLoaded(false)
+    setQuestionNumber(questionNumber + 1)
+    setOptions([])
+    setTimer(30)
+    selectedOption = false
+    setOptionChosen('')
+    setQuestionText('')
+  }
 
   const handleOptionClick = (optionClicked: string) => {
     if (!selectedOption) {
@@ -125,13 +142,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
                 if (questionNumber === 10) {
                   wonGame()
                 } else {
-                  setAllLoaded(false)
-                  setQuestionNumber(questionNumber + 1)
-                  setOptions([])
-                  setTimer(30)
-                  selectedOption = false
-                  setOptionChosen('')
-                  setQuestionText('')
+                  resetForNextQuestion()
                   clearInterval(answerInterval)
                 }
               } else {
@@ -203,7 +214,6 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       localStorage.setItem("htmlQuizHighScore", (questionNumber - 1).toString())
     }
 
-    console.log('hey')
     return false
   }
 
@@ -268,13 +278,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
           wonGame()
           clearInterval(answerInterval)
         } else {
-          setAllLoaded(false)
-          setQuestionNumber(questionNumber + 1)
-          setOptions([])
-          setTimer(30)
-          selectedOption = false
-          setOptionChosen('')
-          setQuestionText('')
+          resetForNextQuestion()
           setSecondChanceState("used")
           clearInterval(answerInterval)
         }
@@ -303,13 +307,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
           wonGame()
           clearInterval(answerInterval)
         } else {
-          setAllLoaded(false)
-          setQuestionNumber(questionNumber + 1)
-          setOptions([])
-          setTimer(30)
-          selectedOption = false
-          setOptionChosen('')
-          setQuestionText('')
+          resetForNextQuestion()
           setFiftyFiftyState("used")
           clearInterval(answerInterval)
         }
@@ -333,13 +331,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
           wonGame()
           clearInterval(answerInterval)
         } else {
-          setAllLoaded(false)
-          setQuestionNumber(questionNumber + 1)
-          setOptions([])
-          setTimer(30)
-          selectedOption = false
-          setOptionChosen('')
-          setQuestionText('')
+          resetForNextQuestion()
           setSecondChanceState("used")
           setFiftyFiftyState("used")
           clearInterval(answerInterval)
