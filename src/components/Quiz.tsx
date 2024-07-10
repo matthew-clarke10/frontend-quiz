@@ -29,62 +29,59 @@ const Quiz: React.FC<QuizProps> = (props) => {
 
   useEffect(() => {
     setIsMusicEnabled(props.musicEnabled);
+    const initialMusicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
+    const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
+    const finalMusicElement = document.querySelector('.final-music-audio') as HTMLAudioElement;
+
+    const fadeOut = (audioElement: HTMLAudioElement, volume: number, duration: number) => {
+      const steps = duration / 50;
+      const stepSize = volume / steps;
+
+      const fadeInterval = setInterval(() => {
+        if (audioElement.volume > stepSize) {
+          audioElement.volume -= stepSize;
+        } else {
+          audioElement.volume = 0;
+          clearInterval(fadeInterval);
+          audioElement.pause();
+          audioElement.currentTime = 0;
+        }
+      }, 50);
+
+      return fadeInterval;
+    };
+
     if (isMusicEnabled) {
       if (questionNumber < 5) {
-        const musicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
-        if (musicElement) {
-          musicElement.volume = 0.3;
-          musicElement.play().catch((error) => {
+        if (initialMusicElement) {
+          initialMusicElement.volume = 0.3;
+          initialMusicElement.play().catch((error) => {
             console.error('Error playing audio:', error);
           });
         }
       } else if (questionNumber < 8) {
-        const initialMusicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
-        const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
-        const steps = 2000 / 50;
-        const stepSize = initialMusicElement.volume / steps;
-
-        const fadeInterval = setInterval(() => {
-          if (initialMusicElement.volume > stepSize) {
-            initialMusicElement.volume -= stepSize;
-          } else {
-            initialMusicElement.volume = 0;
-            clearInterval(fadeInterval);
-            initialMusicElement.pause();
-          }
-          if (middleMusicElement) {
-            middleMusicElement.volume = 0.4;
-            middleMusicElement.play().catch((error) => {
-              console.error('Error playing audio:', error);
-            });
-          }
-        }, 2000);
+        const interval = fadeOut(initialMusicElement, initialMusicElement.volume, 2000);
+        if (middleMusicElement) {
+          middleMusicElement.volume = 0.4;
+          middleMusicElement.play().catch((error) => {
+            console.error('Error playing audio:', error);
+          });
+        }
+        return () => clearInterval(interval);
+      } else if (questionNumber < 11) {
+        const interval = fadeOut(middleMusicElement, middleMusicElement.volume, 2000);
+        if (finalMusicElement) {
+          finalMusicElement.volume = 0.5;
+          finalMusicElement.play().catch((error) => {
+            console.error('Error playing audio:', error);
+          });
+        }
+        return () => clearInterval(interval);
       } else {
-        const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
-        const finalMusicElement = document.querySelector('.final-music-audio') as HTMLAudioElement;
-        const steps = 2000 / 50;
-        const stepSize = middleMusicElement.volume / steps;
-
-        const fadeInterval = setInterval(() => {
-          if (middleMusicElement.volume > stepSize) {
-            middleMusicElement.volume -= stepSize;
-          } else {
-            middleMusicElement.volume = 0;
-            clearInterval(fadeInterval);
-            middleMusicElement.pause();
-          }
-          if (finalMusicElement) {
-            finalMusicElement.volume = 0.5;
-            finalMusicElement.play().catch((error) => {
-              console.error('Error playing audio:', error);
-            });
-          }
-        }, 2000);
+        const interval = fadeOut(finalMusicElement, finalMusicElement.volume, 2000);
+        return () => clearInterval(interval);
       }
     } else {
-      const initialMusicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
-      const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
-      const finalMusicElement = document.querySelector('.final-music-audio') as HTMLAudioElement;
       if (initialMusicElement) {
         initialMusicElement.pause();
       }
@@ -269,7 +266,15 @@ const Quiz: React.FC<QuizProps> = (props) => {
   const wonGame = () => {
     setGameState("win")
     resetVariables()
-    if (isHighScore()) {
+    const highScoreString = localStorage.getItem(`${props.quizData.type}QuizHighScore`)
+    if (highScoreString) {
+      const highScore = Number(highScoreString)
+      if (highScore !== 10) {
+        localStorage.setItem("htmlQuizHighScore", "10")
+        setHighScore(true)
+      }
+    } else {
+      localStorage.setItem("htmlQuizHighScore", "10")
       setHighScore(true)
     }
   }
