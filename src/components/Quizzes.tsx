@@ -8,7 +8,7 @@ const getStars = (quizType: string) => {
     const highScore = Number(highScoreString)
     if (highScore >= 10) {
       return (
-        <div className="h-1/3">
+        <div className="flex h-1/3">
           <FaStar title={`Level ${String(highScore)}`} color="#FFD700" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#FFD700" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#FFD700" className="h-full w-auto" />
@@ -18,7 +18,7 @@ const getStars = (quizType: string) => {
       )
     } else if (highScore >= 8) {
       return (
-        <div className="h-1/3">
+        <div className="flex h-1/3">
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
@@ -27,7 +27,7 @@ const getStars = (quizType: string) => {
       )
     } else if (highScore >= 6) {
       return (
-        <div className="h-1/3">
+        <div className="flex h-1/3">
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#C0C0C0" className="h-full w-auto" />
@@ -35,14 +35,14 @@ const getStars = (quizType: string) => {
       )
     } else if (highScore >= 4) {
       return (
-        <div className="h-1/3">
+        <div className="flex h-1/3">
           <FaStar title={`Level ${String(highScore)}`} color="#CD7F32" className="h-full w-auto" />
           <FaStar title={`Level ${String(highScore)}`} color="#CD7F32" className="h-full w-auto" />
         </div>
       )
     } else if (highScore >= 2) {
       return (
-        <div className="h-1/3">
+        <div className="flex h-1/3">
           <FaStar title={`Level ${String(highScore)}`} color="#CD7F32" className="h-full w-auto" />
         </div>
       )

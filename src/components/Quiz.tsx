@@ -1,129 +1,191 @@
-import { FaHeartCirclePlus } from 'react-icons/fa6'
-import { FaRegSnowflake } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
-import { QuizData } from '../data/quizTypes'
-import { Link } from 'react-router-dom'
+import { FaHeartCirclePlus } from 'react-icons/fa6';
+import { FaRegSnowflake } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { QuizData } from '../data/quizTypes';
+import { Link } from 'react-router-dom';
 
-let selectedOption = false
-let freezeState = "unused"
+interface QuizProps {
+  quizData: QuizData;
+  musicEnabled: boolean;
+}
+
+let selectedOption = false;
+let freezeState = 'unused';
 let freezeTimeout: NodeJS.Timeout;
 
-const Quiz: React.FC<QuizData> = (quizData) => {
-  const [questionNumber, setQuestionNumber] = useState(1)
-  const [questionText, setQuestionText] = useState('')
-  const [options, setOptions] = useState<string[]>([])
-  const [allLoaded, setAllLoaded] = useState(false)
-  const [timer, setTimer] = useState(30)
-  const [optionChosen, setOptionChosen] = useState('')
-  const [secondChanceState, setSecondChanceState] = useState('unused')
-  const [fiftyFiftyState, setFiftyFiftyState] = useState('unused')
-  const [freezeUsed, setFreezeUsed] = useState(false)
-  const [gameState, setGameState] = useState("playing")
-  const [highScore, setHighScore] = useState(false)
+const Quiz: React.FC<QuizProps> = (props) => {
+  const [questionNumber, setQuestionNumber] = useState(1);
+  const [questionText, setQuestionText] = useState('');
+  const [options, setOptions] = useState<string[]>([]);
+  const [allLoaded, setAllLoaded] = useState(false);
+  const [timer, setTimer] = useState(30);
+  const [optionChosen, setOptionChosen] = useState('');
+  const [secondChanceState, setSecondChanceState] = useState('unused');
+  const [fiftyFiftyState, setFiftyFiftyState] = useState('unused');
+  const [freezeUsed, setFreezeUsed] = useState(false);
+  const [gameState, setGameState] = useState('playing');
+  const [highScore, setHighScore] = useState(false);
+  const [isMusicEnabled, setIsMusicEnabled] = useState(props.musicEnabled);
+
+  useEffect(() => {
+    setIsMusicEnabled(props.musicEnabled);
+    if (isMusicEnabled) {
+      if (questionNumber < 5) {
+        const musicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
+        if (musicElement) {
+          musicElement.volume = 0.3;
+          musicElement.play().catch((error) => {
+            console.error('Error playing audio:', error);
+          });
+        }
+      } else if (questionNumber < 8) {
+        const initialMusicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
+        const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
+        const steps = 2000 / 50;
+        const stepSize = initialMusicElement.volume / steps;
+
+        const fadeInterval = setInterval(() => {
+          if (initialMusicElement.volume > stepSize) {
+            initialMusicElement.volume -= stepSize;
+          } else {
+            initialMusicElement.volume = 0;
+            clearInterval(fadeInterval);
+            initialMusicElement.pause();
+          }
+          if (middleMusicElement) {
+            middleMusicElement.volume = 0.4;
+            middleMusicElement.play().catch((error) => {
+              console.error('Error playing audio:', error);
+            });
+          }
+        }, 2000);
+      } else {
+        const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
+        const finalMusicElement = document.querySelector('.final-music-audio') as HTMLAudioElement;
+        const steps = 2000 / 50;
+        const stepSize = middleMusicElement.volume / steps;
+
+        const fadeInterval = setInterval(() => {
+          if (middleMusicElement.volume > stepSize) {
+            middleMusicElement.volume -= stepSize;
+          } else {
+            middleMusicElement.volume = 0;
+            clearInterval(fadeInterval);
+            middleMusicElement.pause();
+          }
+          if (finalMusicElement) {
+            finalMusicElement.volume = 0.5;
+            finalMusicElement.play().catch((error) => {
+              console.error('Error playing audio:', error);
+            });
+          }
+        }, 2000);
+      }
+    } else {
+      const initialMusicElement = document.querySelector('.initial-music-audio') as HTMLAudioElement;
+      const middleMusicElement = document.querySelector('.middle-music-audio') as HTMLAudioElement;
+      const finalMusicElement = document.querySelector('.final-music-audio') as HTMLAudioElement;
+      if (initialMusicElement) {
+        initialMusicElement.pause();
+      }
+      if (middleMusicElement) {
+        middleMusicElement.pause();
+      }
+      if (finalMusicElement) {
+        finalMusicElement.pause();
+      }
+    }
+  }, [props.musicEnabled, isMusicEnabled, questionNumber]);
 
   useEffect(() => {
     const resetVariables = () => {
-      selectedOption = false
-      freezeState = "unused"
-    }
+      selectedOption = false;
+      freezeState = 'unused';
+    };
 
     const lostGame = () => {
-      setGameState("lose")
-      resetVariables()
-    }
+      setGameState('lose');
+      resetVariables();
+    };
 
     const loadQuestionText = () => {
-      let index = 0
-      const question = quizData.questions[questionNumber - 1].question
+      let index = 0;
+      const question = props.quizData.questions[questionNumber - 1].question;
       const questionInterval = setInterval(() => {
-        setQuestionText(question.slice(0, index + 1))
+        setQuestionText(question.slice(0, index + 1));
         index++;
         if (index === question.length) {
-          clearInterval(questionInterval)
-          loadOptions()
+          clearInterval(questionInterval);
+          loadOptions();
         }
-      }, 50)
-      return () => clearInterval(questionInterval)
-    }
+      }, 50);
+      return () => clearInterval(questionInterval);
+    };
 
     const loadOptions = () => {
-      let index = 0
-      const options = quizData.questions[questionNumber - 1].options
+      let index = 0;
+      const options = props.quizData.questions[questionNumber - 1].options;
       const optionsInterval = setInterval(() => {
-        const newOptions = options.slice(0, index + 1)
-        setOptions(newOptions)
-        index++
+        const newOptions = options.slice(0, index + 1);
+        setOptions(newOptions);
+        index++;
         if (index === 4) {
-          clearInterval(optionsInterval)
-          setAllLoaded(true)
+          clearInterval(optionsInterval);
+          setAllLoaded(true);
         }
-      }, 1000)
-      return () => clearInterval(optionsInterval)
-    }
+      }, 1000);
+      return () => clearInterval(optionsInterval);
+    };
 
     const startTimer = () => {
-      let time = 30
+      let time = 30;
       const timerInterval = setInterval(() => {
-        if (freezeState === "active") {
-          clearInterval(timerInterval)
+        if (freezeState === 'active') {
+          clearInterval(timerInterval);
           freezeTimeout = setTimeout(() => {
             const secondTimerInterval = setInterval(() => {
-              freezeState = "used"
-              clearTimeout(freezeTimeout)
+              freezeState = 'used';
+              clearTimeout(freezeTimeout);
               if (selectedOption) {
-                clearInterval(timerInterval)
-                clearInterval(secondTimerInterval)
-                clearTimeout(freezeTimeout)
+                clearInterval(timerInterval);
+                clearInterval(secondTimerInterval);
+                clearTimeout(freezeTimeout);
               } else {
-                setTimer(--time)
+                setTimer(--time);
               }
 
               if (time === 0) {
-                clearInterval(timerInterval)
-                clearInterval(secondTimerInterval)
-                clearTimeout(freezeTimeout)
-                lostGame()
+                clearInterval(timerInterval);
+                clearInterval(secondTimerInterval);
+                clearTimeout(freezeTimeout);
+                lostGame();
               }
-            }, 1000)
-          }, 30000)
+            }, 1000);
+          }, 30000);
 
           if (selectedOption) {
-            console.log('hey')
-            clearInterval(timerInterval)
-            clearTimeout(freezeTimeout)
+            clearInterval(timerInterval);
+            clearTimeout(freezeTimeout);
           }
         }
 
         if (selectedOption) {
-          clearInterval(timerInterval)
+          clearInterval(timerInterval);
         } else {
-          if (freezeState !== "active") {
-            setTimer(--time)
+          if (freezeState !== 'active') {
+            setTimer(--time);
           } else {
-            setFreezeUsed(true)
+            setFreezeUsed(true);
           }
         }
 
         if (time === 0) {
-          clearInterval(timerInterval)
-          lostGame()
+          clearInterval(timerInterval);
+          lostGame();
         }
-      }, 1000)
-      return () => clearInterval(timerInterval)
-    }
-
-    const musicSettingString = localStorage.getItem("isMusicEnabled")
-    if (musicSettingString) {
-      const musicSetting = musicSettingString === "true" ? true : false;
-      if (musicSetting) {
-        const musicElement = document.querySelector('.music-audio') as HTMLAudioElement;
-        if (musicElement) {
-          musicElement.play().catch(error => {
-            console.error('Error playing audio:', error);
-          });
-        }
-      }
-    }
+      }, 1000);
+      return () => clearInterval(timerInterval);
+    };
 
     if (questionText === '') {
       loadQuestionText();
@@ -132,7 +194,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
     if (allLoaded) {
       startTimer();
     }
-  }, [quizData.questions, questionText, questionNumber, allLoaded]);
+  }, [props.quizData.questions, questionText, questionNumber, allLoaded]);
 
   const resetForNextQuestion = () => {
     setAllLoaded(false)
@@ -157,7 +219,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
             setOptionChosen(optionClicked)
             selectedOption = true
             const answerInterval = setInterval(() => {
-              if (optionClicked === quizData.questions[questionNumber - 1].answer) {
+              if (optionClicked === props.quizData.questions[questionNumber - 1].answer) {
                 if (questionNumber === 10) {
                   wonGame()
                 } else {
@@ -221,12 +283,11 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const isHighScore = () => {
-    const highScoreString = localStorage.getItem(`${quizData.type}QuizHighScore`)
+    const highScoreString = localStorage.getItem(`${props.quizData.type}QuizHighScore`)
     if (highScoreString) {
       const highScore = Number(highScoreString)
       if (questionNumber > highScore + 1) {
         localStorage.setItem("htmlQuizHighScore", (questionNumber - 1).toString())
-        console.log('hi')
         return true
       }
     } else {
@@ -248,7 +309,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       if (secondChanceState.startsWith("used:")) {
         const incorrectOptionsArray = []
         for (let i = 0; i < 4; i++) {
-          if (quizData.questions[questionNumber - 1].answer !== optionsArray[i] || secondChanceState.slice(-1) !== optionsArray[i]) {
+          if (props.quizData.questions[questionNumber - 1].answer !== optionsArray[i] || secondChanceState.slice(-1) !== optionsArray[i]) {
             incorrectOptionsArray.push(optionsArray[i])
           }
         }
@@ -261,7 +322,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
       } else {
         const incorrectOptionsArray: string[] = []
         for (let i = 0; i < 4; i++) {
-          if (quizData.questions[questionNumber - 1].answer !== optionsArray[i]) {
+          if (props.quizData.questions[questionNumber - 1].answer !== optionsArray[i]) {
             incorrectOptionsArray.push(optionsArray[i])
           }
         }
@@ -289,7 +350,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const handleSecondChanceInUse = (optionClicked: string) => {
-    if (optionClicked === quizData.questions[questionNumber - 1].answer) {
+    if (optionClicked === props.quizData.questions[questionNumber - 1].answer) {
       setOptionChosen(optionClicked)
       selectedOption = true
       const answerInterval = setInterval(() => {
@@ -318,7 +379,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const handleFiftyFiftyInUse = (optionClicked: string) => {
-    if (optionClicked === quizData.questions[questionNumber - 1].answer) {
+    if (optionClicked === props.quizData.questions[questionNumber - 1].answer) {
       setOptionChosen(optionClicked)
       selectedOption = true
       const answerInterval = setInterval(() => {
@@ -342,7 +403,7 @@ const Quiz: React.FC<QuizData> = (quizData) => {
   }
 
   const handleSecondChanceAndFiftyFiftyInUse = (optionClicked: string) => {
-    if (optionClicked === quizData.questions[questionNumber - 1].answer) {
+    if (optionClicked === props.quizData.questions[questionNumber - 1].answer) {
       setOptionChosen(optionClicked)
       selectedOption = true
       const answerInterval = setInterval(() => {
@@ -416,40 +477,46 @@ const Quiz: React.FC<QuizData> = (quizData) => {
         </section>
         <section className="grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 h-options-small md:h-options text-center hover:cursor-pointer">
           <button onClick={() => handleOptionClick('A')} className={`${secondChanceState === "used: A" || fiftyFiftyState.includes("A") ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
-          ${selectedOption && optionChosen === 'A' && quizData.questions[questionNumber - 1].answer === 'A' ? 'bg-green-500 border-green-600'
-              : selectedOption && optionChosen === 'A' && quizData.questions[questionNumber - 1].answer !== 'A' ? 'bg-red-500 border-red-600'
-                : selectedOption && optionChosen !== 'A' && quizData.questions[questionNumber - 1].answer == 'A' ? 'bg-green-500 border-green-600'
-                  : selectedOption && optionChosen !== 'A' && quizData.questions[questionNumber - 1].answer !== 'A' ? 'opacity-50 bg-gray-600 border-gray-800'
+          ${selectedOption && optionChosen === 'A' && props.quizData.questions[questionNumber - 1].answer === 'A' ? 'bg-green-500 border-green-600'
+              : selectedOption && optionChosen === 'A' && props.quizData.questions[questionNumber - 1].answer !== 'A' ? 'bg-red-500 border-red-600'
+                : selectedOption && optionChosen !== 'A' && props.quizData.questions[questionNumber - 1].answer == 'A' ? 'bg-green-500 border-green-600'
+                  : selectedOption && optionChosen !== 'A' && props.quizData.questions[questionNumber - 1].answer !== 'A' ? 'opacity-50 bg-gray-600 border-gray-800'
                     : 'bg-red-300 border-red-500 hover:bg-red-400'}`}>
             {options[0]}
           </button>
           <button onClick={() => handleOptionClick('B')} className={`${secondChanceState === "used: B" || fiftyFiftyState.includes("B") ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
-          ${selectedOption && optionChosen === 'B' && quizData.questions[questionNumber - 1].answer === 'B' ? 'bg-green-500 border-green-600'
-              : selectedOption && optionChosen === 'B' && quizData.questions[questionNumber - 1].answer !== 'B' ? 'bg-red-500 border-red-600'
-                : selectedOption && optionChosen !== 'B' && quizData.questions[questionNumber - 1].answer == 'B' ? 'bg-green-500 border-green-600'
-                  : selectedOption && optionChosen !== 'B' && quizData.questions[questionNumber - 1].answer !== 'B' ? 'opacity-50 bg-gray-600 border-gray-800'
+          ${selectedOption && optionChosen === 'B' && props.quizData.questions[questionNumber - 1].answer === 'B' ? 'bg-green-500 border-green-600'
+              : selectedOption && optionChosen === 'B' && props.quizData.questions[questionNumber - 1].answer !== 'B' ? 'bg-red-500 border-red-600'
+                : selectedOption && optionChosen !== 'B' && props.quizData.questions[questionNumber - 1].answer == 'B' ? 'bg-green-500 border-green-600'
+                  : selectedOption && optionChosen !== 'B' && props.quizData.questions[questionNumber - 1].answer !== 'B' ? 'opacity-50 bg-gray-600 border-gray-800'
                     : 'bg-blue-300 border-blue-500 hover:bg-blue-400'}`}>
             {options[1]}
           </button>
           <button onClick={() => handleOptionClick('C')} className={`${secondChanceState === "used: C" || fiftyFiftyState.includes("C") ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
-          ${selectedOption && optionChosen === 'C' && quizData.questions[questionNumber - 1].answer === 'C' ? 'bg-green-500 border-green-600'
-              : selectedOption && optionChosen === 'C' && quizData.questions[questionNumber - 1].answer !== 'C' ? 'bg-red-500 border-red-600'
-                : selectedOption && optionChosen !== 'C' && quizData.questions[questionNumber - 1].answer == 'C' ? 'bg-green-500 border-green-600'
-                  : selectedOption && optionChosen !== 'C' && quizData.questions[questionNumber - 1].answer !== 'C' ? 'opacity-50 bg-gray-600 border-gray-800'
+          ${selectedOption && optionChosen === 'C' && props.quizData.questions[questionNumber - 1].answer === 'C' ? 'bg-green-500 border-green-600'
+              : selectedOption && optionChosen === 'C' && props.quizData.questions[questionNumber - 1].answer !== 'C' ? 'bg-red-500 border-red-600'
+                : selectedOption && optionChosen !== 'C' && props.quizData.questions[questionNumber - 1].answer == 'C' ? 'bg-green-500 border-green-600'
+                  : selectedOption && optionChosen !== 'C' && props.quizData.questions[questionNumber - 1].answer !== 'C' ? 'opacity-50 bg-gray-600 border-gray-800'
                     : 'bg-yellow-300 border-yellow-500 hover:bg-yellow-400'}`}>
             {options[2]}
           </button>
           <button onClick={() => handleOptionClick('D')} className={`${secondChanceState === "used: D" || fiftyFiftyState.includes("D") ? "invisible" : "visible"} flex justify-center items-center h-full p-4 text-2xl sm:text-3xl md:text-4xl border-4
-          ${selectedOption && optionChosen === 'D' && quizData.questions[questionNumber - 1].answer === 'D' ? 'bg-green-500 border-green-600'
-              : selectedOption && optionChosen === 'D' && quizData.questions[questionNumber - 1].answer !== 'D' ? 'bg-red-500 border-red-600'
-                : selectedOption && optionChosen !== 'D' && quizData.questions[questionNumber - 1].answer == 'D' ? 'bg-green-500 border-green-600'
-                  : selectedOption && optionChosen !== 'D' && quizData.questions[questionNumber - 1].answer !== 'D' ? 'opacity-50 bg-gray-600 border-gray-800'
+          ${selectedOption && optionChosen === 'D' && props.quizData.questions[questionNumber - 1].answer === 'D' ? 'bg-green-500 border-green-600'
+              : selectedOption && optionChosen === 'D' && props.quizData.questions[questionNumber - 1].answer !== 'D' ? 'bg-red-500 border-red-600'
+                : selectedOption && optionChosen !== 'D' && props.quizData.questions[questionNumber - 1].answer == 'D' ? 'bg-green-500 border-green-600'
+                  : selectedOption && optionChosen !== 'D' && props.quizData.questions[questionNumber - 1].answer !== 'D' ? 'opacity-50 bg-gray-600 border-gray-800'
                     : 'bg-green-300 border-green-500 hover:bg-green-400'}`}>
             {options[3]}
           </button>
         </section>
-        <audio className="music-audio" loop>
+        <audio className="initial-music-audio" loop>
           <source src="/music/initial-music.mp3" type="audio/mp3" />
+        </audio>
+        <audio className="middle-music-audio" loop>
+          <source src="/music/middle-music.mp3" type="audio/mp3" />
+        </audio>
+        <audio className="final-music-audio" loop>
+          <source src="/music/final-music.mp3" type="audio/mp3" />
         </audio>
       </section>
     )
