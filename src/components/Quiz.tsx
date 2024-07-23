@@ -270,11 +270,11 @@ const Quiz: React.FC<QuizProps> = (props) => {
     if (highScoreString) {
       const highScore = Number(highScoreString)
       if (highScore !== 10) {
-        localStorage.setItem("htmlQuizHighScore", "10")
+        localStorage.setItem(`${props.quizData.type}QuizHighScore`, "10")
         setHighScore(true)
       }
     } else {
-      localStorage.setItem("htmlQuizHighScore", "10")
+      localStorage.setItem(`${props.quizData.type}QuizHighScore`, "10")
       setHighScore(true)
     }
   }
@@ -292,11 +292,11 @@ const Quiz: React.FC<QuizProps> = (props) => {
     if (highScoreString) {
       const highScore = Number(highScoreString)
       if (questionNumber > highScore + 1) {
-        localStorage.setItem("htmlQuizHighScore", (questionNumber - 1).toString())
+        localStorage.setItem(`${props.quizData.type}QuizHighScore`, (questionNumber - 1).toString())
         return true
       }
     } else {
-      localStorage.setItem("htmlQuizHighScore", (questionNumber - 1).toString())
+      localStorage.setItem(`${props.quizData.type}QuizHighScore`, (questionNumber - 1).toString())
     }
 
     return false
@@ -462,7 +462,7 @@ const Quiz: React.FC<QuizProps> = (props) => {
     return (
       <section>
         <h2 className="text-3xl sm:text-4xl md:text-5xl text-center h-12 md:h-16">Question {questionNumber}</h2>
-        <h3 className="flex justify-center text-center font-bold text-3xl sm:text-4xl md:text-5xl h-24 md:h-16">{questionText}</h3>
+        <h3 className="flex justify-center text-center font-bold text-xl sm:text-2xl md:text-3xl h-24 md:h-16">{questionText}</h3>
         <section className="flex flex-wrap justify-between items-center h-24 mb-8">
           <div className="w-auto sm:w-powerups flex flex-wrap items-center gap-2">
             <button onClick={secondChanceActivated}><FaHeartCirclePlus title="Second chance" color="red" className={`${secondChanceState === "active" ? "bg-red-300" : secondChanceState === "unused" ? "hover:cursor-pointer hover:bg-red-200" : "hidden"} w-16 sm:w-24 md:w-36 h-12 md:h-16 border-4 border-red-500 py-2`} /></button>

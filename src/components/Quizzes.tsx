@@ -71,7 +71,7 @@ function Quizzes() {
         </Link>
         <Link to="/quizzes/js" className="flex flex-col gap-2 justify-between items-center w-full h-40 md:h-64 p-4 text-6xl bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:border-4 hover:border-yellow-300 hover:cursor-pointer">
           <FaJsSquare title="JavaScript" className="h-2/3" />
-          {getStars("js")}
+          {getStars("javascript")}
         </Link>
         <Link to="/quizzes/all" className="flex flex-col justify-between items-center w-full h-40 md:h-64 p-4 bg-gray-200 text-gray-700 hover:bg-gray-300 hover:border-4 hover:border-gray-400 hover:cursor-pointer">
           <div className="flex justify-center items-center h-2/3 text-4xl md:text-6xl">All</div>
