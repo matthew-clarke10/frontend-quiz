@@ -515,13 +515,13 @@ const Quiz: React.FC<QuizProps> = (props) => {
           </button>
         </section>
         <audio className="initial-music-audio" loop>
-          <source src="/music/initial-music.mp3" type="audio/mp3" />
+          <source src="/frontend-quiz/music/initial-music.mp3" type="audio/mp3" />
         </audio>
         <audio className="middle-music-audio" loop>
-          <source src="/music/middle-music.mp3" type="audio/mp3" />
+          <source src="/frontend-quiz/music/middle-music.mp3" type="audio/mp3" />
         </audio>
         <audio className="final-music-audio" loop>
-          <source src="/music/final-music.mp3" type="audio/mp3" />
+          <source src="/frontend-quiz/music/final-music.mp3" type="audio/mp3" />
         </audio>
       </section>
     )
