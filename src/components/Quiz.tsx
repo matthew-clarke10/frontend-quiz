@@ -439,7 +439,14 @@ const Quiz: React.FC<QuizProps> = (props) => {
 
   if (gameState === "win") {
     return (
-      <div>Win</div>
+      <section className="md:h-main aspect-square md:aspect-auto flex flex-col justify-center items-center gap-8 p-8 sm:p-16 bg-white border-4 border-gray-300 shadow-lg rounded-lg text-lg xs:text-2xl md:text-4xl text-center">
+        <div className="text-2xl xs:text-4xl md:text-6xl">Congratulations!</div>
+        <div className="text-2xl xs:text-4xl md:text-6xl">
+          You completed the quiz {highScore && <span className="text-nowrap">(New highscore)</span>}
+        </div>
+        <button onClick={newGame} className="w-full sm:w-[532px] px-4 md:px-8 py-3 md:py-6 text-center bg-green-500 hover:bg-green-600">Play Again</button>
+        <Link to="/" className="w-full sm:w-[532px] px-4 md:px-8 py-3 md:py-6 text-center bg-blue-500 hover:bg-blue-600">Back to Home</Link>
+      </section>
     )
   } else if (gameState === "lose") {
     return (
