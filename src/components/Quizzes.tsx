@@ -60,7 +60,7 @@ function Quizzes() {
   return (
     <>
       <h2 className="flex justify-center items-center h-16 text-xl md:text-3xl font-bold mb-4">Quiz Selection</h2>
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 h-auto">
+      <section className="grid grid-cols-1 md:grid-cols-2 h-auto">
         <Link to="/quizzes/html" className="flex flex-col gap-2 justify-between items-center w-full h-40 md:h-64 p-4 text-6xl bg-orange-100 hover:bg-orange-200 hover:border-4 hover:border-orange-300 hover:cursor-pointer">
           <FaHtml5 title="HTML" color="#EA580C" className="h-2/3" />
           {getStars("html")}
